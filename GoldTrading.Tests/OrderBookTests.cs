@@ -9,14 +9,14 @@ namespace GoldTrading.Tests
     [TestClass]
     public class OrderBookTests
     {
-        private void TestCase(Action<OrderBook> setupCase, string expectedResult)
+        private void TestCase(Action<OrderBook> setupCase, params string[] expectedResults)
         {
             var tradesText = new StringBuilder();
             var b = new OrderBook(trades => trades.ForEach(x => tradesText.AppendLine(x.ToString())), _ => { });
 
             setupCase(b);
 
-            Assert.AreEqual(expectedResult, tradesText.ToString().Trim());
+            Assert.AreEqual(string.Join(Environment.NewLine, expectedResults), tradesText.ToString().Trim());
         }
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace GoldTrading.Tests
                     b.AddSellOrder(1300, 5, "user1");
                     b.AddBuyOrder(1350, 5, "user2");
                 },
-                @"user1 sells 5 to user2 at 1300");
+                "user1 sells 5 to user2 at 1300");
         }
 
         [TestMethod]
@@ -45,7 +45,7 @@ namespace GoldTrading.Tests
                 b.AddSellOrder(1300, 5, "user1");
                 b.AddBuyOrder(1350, 5, "user2");
             },
-            @"user1 sells 5 to user2 at 1300");
+            "user1 sells 5 to user2 at 1300");
         }
 
         [TestMethod]
@@ -57,7 +57,7 @@ namespace GoldTrading.Tests
                 b.AddBuyOrder(1350, 5, "user2");
                 b.AddSellOrder(1300, 5, "user3");
             },
-            @"user3 sells 5 to user2 at 1350");
+            "user3 sells 5 to user2 at 1350");
         }
         
         [TestMethod]
@@ -69,8 +69,8 @@ namespace GoldTrading.Tests
                 b.AddBuyOrder(1302, 1, "user2");
                 b.AddSellOrder(1300, 3, "user3");
             },
-@"user3 sells 1 to user2 at 1302
-user3 sells 1 to user1 at 1301");
+            "user3 sells 1 to user2 at 1302",
+            "user3 sells 1 to user1 at 1301");
         }
 
         [TestMethod]
@@ -82,8 +82,8 @@ user3 sells 1 to user1 at 1301");
                 b.AddSellOrder(1300, 2, "user2");
                 b.AddBuyOrder(1302, 1, "user3");
             },
-@"user2 sells 1 to user1 at 1301
-user2 sells 1 to user3 at 1300");
+            "user2 sells 1 to user1 at 1301",
+            "user2 sells 1 to user3 at 1300");
         }
     }
     
