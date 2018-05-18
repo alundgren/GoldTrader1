@@ -1,0 +1,51 @@
+﻿@model IndexModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>Goldtrader - user@(ViewBag.UserId)</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+    @Html.Partial("Index_VueClient")
+
+    <script>globalSettings = JSON.parse('@Html.Raw(Model.GlobalJavaScriptSettings)')</script>
+
+    <!-- vue -->
+    <script src="https://unpkg.com/vue@2.5.16/dist/vue.js"></script>
+
+    <!-- http calls -->
+    <script src="https://unpkg.com/axios@0.18.0/dist/axios.min.js"></script>
+
+    <!-- For bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <!-- For signalr -->
+    <script src="~/Scripts/jquery.signalR-2.2.3.min.js"></script>
+    <script src="@Html.Raw(Model.ServerSignalrHubsUrl)"></script>
+
+    <!-- The vue app -->
+    <script src="~/Content/js/home.js"></script>
+
+    <!-- Connect signalr to the vue app -->
+    <script>
+        $(function () {
+            $.connection.hub.url = globalSettings.serverSignalrBaseUrl;
+            var hub = $.connection.tradesHub;
+            hub.client.onTradeEvent = function (evt) {
+                app.$emit(evt.eventName, evt.eventData);
+            };
+            $.connection.hub.start();
+        });
+    </script>
+</body>
+</html>
